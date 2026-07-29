@@ -1,0 +1,11 @@
+{
+  "protocol": "dji_ocusync",
+  "frequency_hz": 2440000000,
+  "sample_rate_hz": 20000000,
+  "capture_date": "2026-07-29",
+  "capture_time": "05:43:49 UTC",
+  "drone_model": "",
+  "environment": "unknown",
+  "notes": "Capture 2/5, label=drone",
+  "format": "int8_iq"
+}

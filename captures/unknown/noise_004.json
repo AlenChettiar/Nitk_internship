@@ -1,0 +1,11 @@
+{
+  "protocol": "unknown",
+  "frequency_hz": 2440000000,
+  "sample_rate_hz": 20000000,
+  "capture_date": "2026-07-29",
+  "capture_time": "05:39:57 UTC",
+  "drone_model": "",
+  "environment": "unknown",
+  "notes": "Capture 4/5, label=noise",
+  "format": "int8_iq"
+}

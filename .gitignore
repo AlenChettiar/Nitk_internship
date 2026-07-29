@@ -1,0 +1,4 @@
+captures/dji_ocusync/*.iq
+
+captures/unknown/*.iq
+model_weights/
