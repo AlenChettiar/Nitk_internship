@@ -180,6 +180,7 @@ def train_resnet(data_dir: Path, output_weights: Path, epochs: int = 8, batch_si
     print(f"\n🧠 Fine-tuning ResNet18 for {epochs} epochs...\n")
 
     best_acc = 0.0
+    best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
 
     for epoch in range(1, epochs + 1):
         start_t = time.time()
@@ -230,7 +231,7 @@ def train_resnet(data_dir: Path, output_weights: Path, epochs: int = 8, batch_si
     # Save Checkpoint with Best Weights
     output_weights.parent.mkdir(parents=True, exist_ok=True)
     checkpoint = {
-        "model_state_dict": best_model_state if 'best_model_state' in locals() else model.state_dict(),
+        "model_state_dict": best_model_state,
         "dataset_idx_to_class": dataset.idx_to_class,
         "sample_secs": SAMPLE_SECS,
         "nfft": NFFT,

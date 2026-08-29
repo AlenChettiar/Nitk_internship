@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Radio, User, Cpu, Server, WifiOff, Wifi, Volume2, VolumeX, ShieldAlert, Zap, ChevronDown } from 'lucide-react';
 
 export default function Navbar({ 
@@ -15,6 +15,22 @@ export default function Navbar({
   const [currentTime, setCurrentTime] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
   const [statusMenuOpen, setStatusMenuOpen] = useState(false);
+  const statusMenuRef = useRef(null);
+  const profileMenuRef = useRef(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (statusMenuRef.current && !statusMenuRef.current.contains(e.target)) {
+        setStatusMenuOpen(false);
+      }
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const updateTime = () => {
@@ -99,7 +115,7 @@ export default function Navbar({
         </div>
 
         {/* Quick Connection Simulation Switcher */}
-        <div className="relative">
+        <div className="relative" ref={statusMenuRef}>
           <button
             onClick={() => setStatusMenuOpen(!statusMenuOpen)}
             className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-cyan-300 text-xs font-mono flex items-center gap-1"
@@ -182,7 +198,7 @@ export default function Navbar({
         </button>
 
         {/* User Profile Avatar */}
-        <div className="relative">
+        <div className="relative" ref={profileMenuRef}>
           <button
             onClick={() => setProfileOpen(!profileOpen)}
             className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 p-0.5 flex items-center justify-center hover:scale-105 transition-transform border border-cyan-300/40 glow-blue cursor-pointer"

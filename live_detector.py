@@ -30,7 +30,9 @@ import signal
 import sqlite3
 import subprocess
 import sys
+import tempfile
 import time
+from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -103,7 +105,7 @@ class GamutRFResNet18Detector:
             raise FileNotFoundError(f"Pre-trained weights file not found: {weights_path}")
 
         print(f"📦 Loading pre-trained GamutRF ResNet18 model from: {weights_path.name}")
-        self.checkpoint = torch.load(weights_path, map_location=self.device)
+        self.checkpoint = torch.load(weights_path, map_location=self.device, weights_only=False)  # TODO: migrate to weights_only=True with separate metadata sidecar
 
         self.idx_to_class = self.checkpoint.get("dataset_idx_to_class", {0: 'drone', 1: 'wifi_2_4', 2: 'wifi_5'})
         self.sample_secs = self.checkpoint.get("sample_secs", MODEL_SAMPLE_SECS)
@@ -197,7 +199,8 @@ class HackRFStreamer:
         self.sample_rate = int(sample_rate)
         self.lna_gain = lna_gain
         self.vga_gain = vga_gain
-        self.fifo_path = Path("/tmp/hackrf_rfclass.fifo")
+        self._tmpdir = tempfile.mkdtemp(prefix="hackrf_")
+        self.fifo_path = Path(self._tmpdir) / "hackrf_rfclass.fifo"
         self.process: Optional[subprocess.Popen] = None
 
     def start(self):
@@ -239,6 +242,8 @@ class HackRFStreamer:
             self.fifo_fd.close()
         if self.fifo_path.exists():
             os.unlink(self.fifo_path)
+        if hasattr(self, '_tmpdir') and os.path.isdir(self._tmpdir):
+            os.rmdir(self._tmpdir)
 
 
 class ZMQStreamer:
@@ -444,7 +449,6 @@ def main():
     total_frames = 0
     alert_detections = 0
     # Rolling deque of (label, confidence) for the last N frames
-    from collections import deque
     vote_buf: deque = deque(maxlen=vote_window)
     last_alert_label = None  # Suppress repeated alert prints for same sustained signal
 

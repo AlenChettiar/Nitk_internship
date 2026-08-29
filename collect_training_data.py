@@ -246,18 +246,23 @@ def capture_iq_zmq(
         context.term()
 
 
-def validate_capture(filepath: Path, sample_rate: int = DEFAULT_SAMPLE_RATE) -> dict:
+def validate_capture(filepath: Path, sample_rate: int = DEFAULT_SAMPLE_RATE, data_format: str = "int8") -> dict:
     """Quick validation that a capture file has signal content."""
     try:
-        # Read as 8-bit signed I/Q (hackrf_transfer format)
-        raw = np.fromfile(str(filepath), dtype=np.int8)
-        if len(raw) < 1024:
-            return {"valid": False, "reason": "File too small"}
+        if data_format == "complex64":
+            iq = np.fromfile(str(filepath), dtype=np.complex64)
+            if len(iq) < 512:
+                return {"valid": False, "reason": "File too small"}
+        else:
+            # Read as 8-bit signed I/Q (hackrf_transfer format)
+            raw = np.fromfile(str(filepath), dtype=np.int8)
+            if len(raw) < 1024:
+                return {"valid": False, "reason": "File too small"}
 
-        # Separate I and Q
-        i_samples = raw[0::2].astype(np.float32)
-        q_samples = raw[1::2].astype(np.float32)
-        iq = i_samples + 1j * q_samples
+            # Separate I and Q
+            i_samples = raw[0::2].astype(np.float32)
+            q_samples = raw[1::2].astype(np.float32)
+            iq = i_samples + 1j * q_samples
 
         # Compute power spectrum
         fft_data = np.fft.fftshift(np.fft.fft(iq[:min(len(iq), 65536)]))
@@ -361,10 +366,9 @@ def run_guided_collection(args):
             input(f"\n   Press ENTER when ready to start {label} captures...")
 
         for i in range(1, num_captures + 1):
-            # Generate filename
-            existing = list(label_dir.glob("*.iq"))
-            next_num = len(existing) + 1
-            filename = f"{label}_{next_num:03d}.iq"
+            # Generate race-safe filename using timestamp
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{label}_{timestamp}_{i:03d}.iq"
             output_path = label_dir / filename
 
             print(f"\n  ── Capture {i}/{num_captures}: {filename} ──")
@@ -395,7 +399,10 @@ def run_guided_collection(args):
             if not args.dry_run:
                 # Validate
                 print("  🔬 Validating capture...")
-                stats = validate_capture(output_path, sample_rate)
+                stats = validate_capture(
+                    output_path, sample_rate,
+                    data_format="complex64" if source == "zmq" else "int8"
+                )
                 if stats["valid"]:
                     print(f"     Duration: {stats['duration_s']}s | "
                           f"SNR: {stats['snr_db']:.1f} dB | "

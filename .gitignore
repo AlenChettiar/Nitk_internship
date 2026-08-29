@@ -2,3 +2,7 @@ captures/dji_ocusync/*.iq
 
 captures/unknown/*.iq
 model_weights/
+
+# macOS metadata
+.DS_Store
+**/.DS_Store

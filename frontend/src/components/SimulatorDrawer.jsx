@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Zap, AlertTriangle, ShieldCheck, RefreshCw, Volume2, PlusCircle, Trash2, X } from 'lucide-react';
 
 export default function SimulatorDrawer({ isOpen, onClose, onInjectTarget, onClearTargets, audioEnabled, setAudioEnabled }) {
+  const audioCtxRef = useRef(null);
+
   if (!isOpen) return null;
+
+  const playAlertBeep = () => {
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      const ctx = audioCtxRef.current;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.3);
+    } catch (e) {}
+  };
 
   const sampleInjectables = [
     {
@@ -85,19 +105,7 @@ export default function SimulatorDrawer({ isOpen, onClose, onInjectTarget, onCle
                 onClick={() => {
                   onInjectTarget(item);
                   if (audioEnabled) {
-                    // Play synthesized warning beep
-                    try {
-                      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                      const osc = audioCtx.createOscillator();
-                      const gain = audioCtx.createGain();
-                      osc.type = 'sawtooth';
-                      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                      osc.connect(gain);
-                      gain.connect(audioCtx.destination);
-                      osc.start();
-                      osc.stop(audioCtx.currentTime + 0.3);
-                    } catch (e) {}
+                    playAlertBeep();
                   }
                 }}
                 className="w-full p-3.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-cyan-400/50 hover:bg-slate-800/80 text-left transition-all group flex items-center justify-between"

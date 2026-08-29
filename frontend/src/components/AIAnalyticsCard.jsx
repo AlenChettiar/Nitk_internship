@@ -105,11 +105,11 @@ export default function AIAnalyticsCard() {
             </div>
             <div className="flex justify-between py-2 border-b border-slate-800">
               <span className="text-slate-400">FFT Window Size (NFFT):</span>
-              <span className="font-bold text-white">1024 points (Hanning)</span>
+              <span className="font-bold text-white">512 points (Hanning)</span>
             </div>
             <div className="flex justify-between py-2 border-b border-slate-800">
               <span className="text-slate-400">Spectrogram Input Tensor:</span>
-              <span className="font-bold text-cyan-400">[1, 3, 224, 224] RGB</span>
+              <span className="font-bold text-cyan-400">[1, 3, 256, 256] RGB</span>
             </div>
             <div className="flex justify-between py-2 border-b border-slate-800">
               <span className="text-slate-400">Confidence Threshold:</span>

@@ -28,7 +28,7 @@ final_drone_detection/
 To start live drone detection using your pre-trained ResNet18 model:
 
 ```bash
-cd /Users/alen/Documents/hackrf/final_drone_detection
+cd ./final_drone_detection
 
 ../DroneCMD/venv/bin/python live_detector.py --frequency 2.44e9
 ```
@@ -40,7 +40,7 @@ cd /Users/alen/Documents/hackrf/final_drone_detection
 If you collect new RF captures or want to retrain the neural network:
 
 ```bash
-cd /Users/alen/Documents/hackrf/final_drone_detection
+cd ./final_drone_detection
 
 ../DroneCMD/venv/bin/python train_resnet.py --data-dir captures --epochs 8
 ```
@@ -52,7 +52,7 @@ cd /Users/alen/Documents/hackrf/final_drone_detection
 To record new RF captures from your HackRF One:
 
 ```bash
-cd /Users/alen/Documents/hackrf/final_drone_detection
+cd ./final_drone_detection
 
 # Capture Ambient Background Noise (Drone OFF)
 ../DroneCMD/venv/bin/python collect_training_data.py --label noise --count 5 --duration 30
@@ -66,7 +66,7 @@ cd /Users/alen/Documents/hackrf/final_drone_detection
 ## 4. Synthetic Pipeline Self-Test (No Hardware Needed)
 
 ```bash
-cd /Users/alen/Documents/hackrf/final_drone_detection
+cd ./final_drone_detection
 
 ../DroneCMD/venv/bin/python live_detector.py --test
 ```

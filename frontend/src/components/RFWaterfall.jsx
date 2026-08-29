@@ -19,7 +19,6 @@ export default function RFWaterfall({ centerFrequency, isScanning, targets }) {
     }
 
     const numBins = width;
-    let spectrumHistory = ctx.getImageData(0, 0, width, height);
 
     // Color mapper for dBm intensity (-100 dBm to -30 dBm)
     const getdBmColor = (val) => {

@@ -1,0 +1,12 @@
+# DroneRF AI — Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core ML
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.24.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+
+# Optional: GNU Radio ZMQ stream source
+pyzmq>=25.0.0
